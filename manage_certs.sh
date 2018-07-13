@@ -1,5 +1,5 @@
 #!/bin/bash
-CERT_PATH="/certs"
+CERT_PATH="${CERT_PATH:-/certs}"
 CLUSTER_NAME=${CLUSTER_NAME:-"etcd-cluster"}
 CLUSTER_FQDN=${CLUSTER_FQDN:-"*.etcd-cluster.default.svc"}
 KUBECTL_CMD="/usr/local/bin/kubectl"
@@ -53,9 +53,10 @@ function cert_manager () {
 }
 
 while true ; do
+  mkdir ${CERT_PATH}
   cert_manager
   echo "cleaning up after certmanager"
-  rm ${CERT_PATH}/*.{csr,crt,key}
+  rm -rf ${CERT_PATH}
   echo "nothing left to do. Sleeping ${SLEEP_TIME} seconds"
   sleep ${SLEEP_TIME}
 done
