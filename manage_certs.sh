@@ -4,7 +4,7 @@ CLUSTER_NAME=${CLUSTER_NAME:-"etcd-cluster"}
 CLUSTER_FQDN=${CLUSTER_FQDN:-"*.etcd-cluster.default.svc"}
 KUBECTL_CMD="/usr/local/bin/kubectl"
 KUBECSR_CMD="/usr/local/bin/kube-csr"
-NAMESPACE=${MY_POD_NAMESPACE:-"default"}
+NAMESPACE=${NAMESPACE:-"default"}
 SLEEP_TIME=${SLEEP_TIME:-"30"}
 
 function cert_manager () {
@@ -36,6 +36,7 @@ function cert_manager () {
       --submit \
       --approve \
       --fetch \
+      --delete \
       --subject-alternative-names="${SANS}" \
       --private-key-file=${CERT_PATH}/${SECRET_NAME}.key \
       --csr-file=${CERT_PATH}/${SECRET_NAME}.csr \
