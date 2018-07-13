@@ -1,44 +1,19 @@
+# certs2secrets
+## Shoutout to Julian Balestra for [kube-csr](https://github.com/JulienBalestra/kube-csr)
 
-gangway
-=======
+## Basic design:
 
-_(noun): An opening in the bulwark of the ship to allow passengers to board or leave the ship._
+The goal is to generate a set kubernetes tls secrets that will be used to secure an etcd cluster as provided by the etcd-operator.
 
-An application that can be used to easily enable authentication flows via OIDC for a kubernetes cluster.
-
-## Deployment
-
-Instructions for deploying gangway for common cloud providers can be found [here](docs/README.md).
-
-## API-Server flags
-
-gangway requires that the Kubernetes API server is configured for OIDC:
-
-https://kubernetes.io/docs/admin/authentication/#configuring-the-api-server
+The vars that this container makes use of are:
 
 ```
-kube-apiserver
-...
---oidc-issuer-url "https://example.auth0.com"
---oidc-client-id 3YM4ue8MoXgBkvCIHh00000000000
---oidc-username-claim sub
---oidc-groups-claim "https://example.auth0.com/groups"
+CLUSTER_NAME=${CLUSTER_NAME:-"etcd-cluster"}
+CLUSTER_FQDN=${CLUSTER_FQDN:-"*.etcd-cluster.default.svc"}
+NAMESPACE=${MY_POD_NAMESPACE:-"default"}
+SLEEP_TIME=${SLEEP_TIME:-"30"}
 ```
 
-## Build
+You need to specify these with the `deployment.spec.containers.env` mechanism. There is an example in [examples](/examples)
 
-Requirements for building
-
-- Go (built with 1.10)
-- [go-bindata](https://github.com/jteeuwen/go-bindata)
-- [dep](https://github.com/golang/dep)
-
-A Makefile is provided for building tasks. The options are as follows
-
-Getting started is as simple as:
-```
-$ go get github.com/heptiolabs/gangway
-$ cd $GOPATH/src/github.com/heptiolabs/gangway
-$ make setup
-$ make
-```
+On an RBAC enables cluster you will also need to create the roles in the [examples](/examples) dir to allow the service account (certs2secrets) associated with the pod permissions to create the certificates and upload the secrets into the namespace you have chosen.
