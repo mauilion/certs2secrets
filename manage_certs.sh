@@ -40,8 +40,7 @@ function cert_manager () {
       --subject-alternative-names="${SANS}" \
       --private-key-file=${CERT_PATH}/${SECRET_NAME}.key \
       --csr-file=${CERT_PATH}/${SECRET_NAME}.csr \
-      --certificate-file=${CERT_PATH}/${SECRET_NAME}.crt \
-      --kubeconfig-path=${KUBECONFIG}
+      --certificate-file=${CERT_PATH}/${SECRET_NAME}.crt
 
       echo "creating the tls secret: ${SECRET_NAME} in namespace: ${NAMESPACE}"
 
