@@ -16,4 +16,6 @@ SLEEP_TIME=${SLEEP_TIME:-"30"}
 
 You need to specify these with the `deployment.spec.containers.env` mechanism. There is an example in [examples](/examples)
 
+Image versioning tracks the version of kubectl placed in the container.
+
 On an RBAC enables cluster you will also need to create the roles in the [examples](/examples) dir to allow the service account (certs2secrets) associated with the pod permissions to create the certificates and upload the secrets into the namespace you have chosen.
