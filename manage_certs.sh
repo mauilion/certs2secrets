@@ -1,6 +1,6 @@
 #!/bin/bash
-CERT_PATH="${CERT_PATH:-/certs}"
-CLUSTER_NAME=${CLUSTER_NAME:-"etcd-cluster"}
+CERT_PATH="/certs"
+CLUSTER_NAME="etcd-cluster"
 CLUSTER_FQDN=${CLUSTER_FQDN:-"*.etcd-cluster.default.svc"}
 KUBECTL_CMD="/usr/local/bin/kubectl"
 KUBECSR_CMD="/usr/local/bin/kube-csr"
@@ -8,7 +8,7 @@ NAMESPACE=${NAMESPACE:-"default"}
 SLEEP_TIME=${SLEEP_TIME:-"30"}
 
 function cert_manager () {
-  for cert in client peer server ; do
+  for cert in etcd-client peer server ; do
     SECRET_NAME="${CLUSTER_NAME}-${cert}-tls"
     SANS=$(case "${cert}" in
     (client)
@@ -38,16 +38,21 @@ function cert_manager () {
       --approve \
       --fetch \
       --subject-alternative-names="${SANS}" \
-      --private-key-file=${CERT_PATH}/${SECRET_NAME}.key \
-      --csr-file=${CERT_PATH}/${SECRET_NAME}.csr \
-      --certificate-file=${CERT_PATH}/${SECRET_NAME}.crt
+      --private-key-file=${CERT_PATH}/${cert}.key \
+      --csr-file=${CERT_PATH}/${cert}.csr \
+      --certificate-file=${CERT_PATH}/${cert}.crt
+
+      ln -sfn /var/run/secrets/kubernetes.io/serviceaccount/ca.crt ${CERT_PATH}/${cert}-ca.crt
 
       echo "creating the tls secret: ${SECRET_NAME} in namespace: ${NAMESPACE}"
 
-      ${KUBECTL_CMD} create secret tls ${SECRET_NAME} \
+      ${KUBECTL_CMD} create secret generic ${SECRET_NAME} \
       --namespace=${NAMESPACE} \
-      --cert=${CERT_PATH}/${SECRET_NAME}.crt \
-      --key=${CERT_PATH}/${SECRET_NAME}.key
+      --from-file=${cert}.crt=${CERT_PATH}/${cert}.crt \
+      --from-file=${cert}.key=${CERT_PATH}/${cert}.key \
+      --from-file=${cert}-ca.crt=${CERT_PATH}/${cert}-ca.crt \
+      --from-file=${cert}.csr=${CERT_PATH}/${cert}.csr
+
     fi
   done
 }
