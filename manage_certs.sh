@@ -29,6 +29,7 @@ function cert_manager () {
       continue
     else
       echo "generating the certificate for ${CLUSTER_NAME} ${cert} communication"
+      ${KUBECTL_CMD} delete csr -n ${NAMESPACE} ${SECRET_NAME}
       ${KUBECSR_CMD} \
       issue ${SECRET_NAME} \
       --csr-name=${SECRET_NAME} \
@@ -36,7 +37,6 @@ function cert_manager () {
       --submit \
       --approve \
       --fetch \
-      --delete \
       --subject-alternative-names="${SANS}" \
       --private-key-file=${CERT_PATH}/${SECRET_NAME}.key \
       --csr-file=${CERT_PATH}/${SECRET_NAME}.csr \
