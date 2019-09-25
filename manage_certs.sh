@@ -1,6 +1,6 @@
 #!/bin/bash
 CERT_PATH="/certs"
-CLUSTER_NAME="etcd-cluster"
+CLUSTER_NAME=${CLUSTER_NAME:-"etcd-cluster"}
 CLUSTER_FQDN=${CLUSTER_FQDN:-"*.etcd-cluster.default.svc"}
 KUBECTL_CMD="/usr/local/bin/kubectl"
 KUBECSR_CMD="/usr/local/bin/kube-csr"
